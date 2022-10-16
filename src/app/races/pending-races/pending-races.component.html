@@ -1,0 +1,4 @@
+<div *ngFor="let race of races">
+  <pr-race [raceModel]="race"></pr-race>
+  <a [routerLink]="['/races', race.id]" class="btn btn-primary mb-2">Bet on {{ race.name }}</a>
+</div>

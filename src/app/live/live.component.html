@@ -1,0 +1,44 @@
+<div *ngIf="raceModel">
+  <h1>{{ raceModel.name }}</h1>
+  <ngb-alert [dismissible]="false" type="danger" *ngIf="error">A problem occurred during the live.</ngb-alert>
+  <div id="live-race" [ngSwitch]="raceModel.status">
+    <div *ngSwitchCase="'FINISHED'">
+      <div *ngIf="!winners.length; else displayWinners">The race is over.</div>
+      <ng-template #displayWinners>
+        <ngb-alert [dismissible]="false" *ngIf="betWon" type="success">You won your bet!</ngb-alert>
+        <ngb-alert [dismissible]="false" *ngIf="raceModel.betPonyId && !betWon">You lost your bet.</ngb-alert>
+        <div>Most Valuable Ponies</div>
+        <div class="row">
+          <div *ngFor="let winner of winners" class="col-12 col-md-2" [class.selected]="winner.id === raceModel.betPonyId">
+            <pr-pony [ponyModel]="winner"></pr-pony>
+          </div>
+        </div>
+      </ng-template>
+    </div>
+    <div *ngSwitchCase="'PENDING'">
+      <div>The race will start {{ raceModel.startInstant | fromNow }}</div>
+      <div class="row">
+        <div *ngFor="let pony of raceModel.ponies" class="col-sm-2" [class.selected]="pony.id === raceModel.betPonyId">
+          <pr-pony [ponyModel]="pony"></pr-pony>
+        </div>
+      </div>
+    </div>
+    <div *ngSwitchCase="'RUNNING'">
+      <div>Click really fast on your favorite pony to support it</div>
+      <div style="margin-left: 95%; margin-bottom: 5px">
+        <span class="fa fa-flag" style="font-size: x-large"></span>
+      </div>
+      <div style="width: 95%; border-right: 3px dotted lightgray">
+        <div
+          *ngFor="let pony of poniesWithPosition; trackBy: ponyById"
+          class="pony-wrapper"
+          [class.selected]="pony.id === raceModel.betPonyId"
+          [style.marginLeft.%]="pony.position - 5"
+          style="transition: all linear 1s"
+        >
+          <pr-pony [ponyModel]="pony" [isRunning]="true" [isBoosted]="pony.boosted" (ponyClicked)="onClick(pony)"></pr-pony>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
